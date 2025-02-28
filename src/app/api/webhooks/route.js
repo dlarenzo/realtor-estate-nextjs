@@ -3,7 +3,14 @@ import { headers } from "next/headers";
 import { createOrUpdateUser, deleteUser } from "@/lib/actions/user";
 import { clerkClient } from "@clerk/nextjs/server";
 
+// MongoDB connection via Mongoose IMPORT
+import { connect } from "@/lib/mongodb/mongoose";
+
 export async function POST(req) {
+  d;
+  // Connect to MongoDB, Ensure MongDB is connected
+  await connect();
+
   const SIGNING_SECRET = process.env.SIGNING_SECRET;
 
   if (!SIGNING_SECRET) {
@@ -65,8 +72,9 @@ export async function POST(req) {
       );
       if (user && eventType === "user.created") {
         try {
-          const client = await clerkClient();
-          await client.users.updateUserMetadata(id, {
+          // GET MONGODB ID AND SAVE IT TO CLERK
+
+          await clerkClient.users.updateUserMetadata(id, {
             publicMetadata: {
               userMogoId: user._id,
             },
